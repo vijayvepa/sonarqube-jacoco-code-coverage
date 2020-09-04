@@ -3,6 +3,7 @@ plugins {
     id 'jacoco'
     id 'org.sonarqube' version '3.0'
     id 'com.palantir.docker-compose' version '0.25.0'
+    id "com.usaa.sonar-quality-gates" version "2.0.0"
 }
 
 group 'com.tom'
@@ -25,3 +26,10 @@ sonarqube {
 }
 
 tasks['sonarqube'].dependsOn test
+
+sonarqubeQualityGate {
+    failOnWarn true
+    gate 'Sonar way'
+    username 'admin'
+    password 'admin'
+}
