@@ -1,8 +1,10 @@
 plugins {
     id 'java'
-    id 'jacoco'
-    id 'org.sonarqube'
-    // id 'com.palantir.docker-compose' version '0.25.0'
+}
+
+
+repositories{
+    mavenCentral()
 }
 
 dependencies {
