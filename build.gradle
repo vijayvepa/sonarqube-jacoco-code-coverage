@@ -1,1 +1,64 @@
-apply from: "${project.rootDir}/jacoco.gradle"
+buildscript{
+    repositories{
+        mavenCentral()
+    }
+    dependencies{
+        classpath 'org.jacoco:org.jacoco.ant:0.8.5'
+        classpath "org.jacoco:org.jacoco.core:0.8.5"
+    }
+}
+
+project.allprojects {
+
+
+    apply plugin: 'java'
+    apply plugin: 'jacoco'
+
+    repositories{
+        mavenCentral()
+    }
+
+    //apply from: "${project.rootDir}/jacoco.gradle"
+    jacocoTestReport {
+        reports {
+            xml.enabled true
+        }
+    }
+
+    jacocoTestReport.dependsOn test
+}
+
+
+project.afterEvaluate {
+
+    tasks.create(name: "jacocoMasterCoverage", type: JacocoReport,
+            dependsOn: [':domain:test', ':domain:jacocoTestReport']) {
+        group = "Reporting"
+        description = "Generate Jacoco coverage reports for the domain build"
+
+        reports {
+            html.enabled = false
+            xml.enabled = true
+            csv.enabled = false
+        }
+
+        print  "${project(':domain').projectDir}/src/main/java"
+
+        def classDirs = [
+                "${project(':domain').buildDir}/classes/java/main"
+        ]
+
+        classDirectories.setFrom(files(classDirs))
+
+        def coverageSourceDirs = [
+                "${project(':domain').projectDir}/src/main/java",
+         ]
+
+        additionalSourceDirs.setFrom(files(coverageSourceDirs))
+        sourceDirectories.setFrom(files(coverageSourceDirs))
+
+        executionData(files([
+                "${project(':domain').buildDir}/jacoco/test.exec"
+        ]))
+    }
+}

@@ -13,15 +13,6 @@ project.allprojects {
 
 }
 
-tasks.withType(Test) {
-    jacoco.includeNoLocationClasses = true
-    jacoco.excludes = ['jdk.internal.*'] // see related issue https://github.com/gradle/gradle/issues/5184#issuecomment-457865951
-
-
-}
-
-tasks.withType(Test) { jacoco.includeNoLocationClasses = true }
-
 
 project.afterEvaluate {
     project.subprojects { subproject ->
