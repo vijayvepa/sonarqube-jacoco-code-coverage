@@ -50,7 +50,12 @@ sonarqube {
 project.afterEvaluate {
 
     tasks.create(name: "jacocoMasterCoverage", type: JacocoReport,
-            dependsOn: [':domain:test', ':domain:jacocoTestReport']) {
+            dependsOn: [
+                    ':domain:test',
+                    ':domain:jacocoTestReport',
+                    ':api:test',
+                    ':api:jacocoTestReport'
+            ]) {
         group = "Reporting"
         description = "Generate Jacoco coverage reports for the domain build"
 
