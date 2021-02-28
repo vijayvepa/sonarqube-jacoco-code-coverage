@@ -3,7 +3,7 @@ buildscript{
         mavenCentral()
     }
     dependencies{
-        classpath 'org.jacoco:org.jacoco.ant:0.8.5'
+        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.8"
         classpath "org.jacoco:org.jacoco.core:0.8.5"
     }
 }
@@ -28,6 +28,24 @@ project.allprojects {
     jacocoTestReport.dependsOn test
 }
 
+
+
+
+apply plugin: "org.sonarqube"
+
+sonarqube {
+    properties {
+        property "sonar.host.url", "http://yy098809:9000"
+        property "sonar.login", "0a9c5152ba956235c9303cb64bddbe1cd00e6365"
+        property "sonar.projectName", project.name
+        property "sonar.projectKey", "testproject"
+        property "sonar.projectVersion", "1.0.0"
+        property "sonar.sourceEncoding", "UTF-8"
+        property "sonar.java.coveragePlugin", "jacoco"
+        // taken from `jacoco.gradle`
+        //property "sonar.coverage.exclusions", "**/test/**,**/androidTest/**,**/R.class,**/BuildConfig.*,**/Manifest*.*,**/*Test*.*,**/com/example/databinding/*,**/com/example/generated/callback/*,**/*Dto*.*,**/android/databinding/*,**/androidx/databinding/*,**/di/module/*,**/*MapperImpl*.*,**/BuildConfig.*,**/*Component*.*,**/*BR*.*,**/Manifest*.*,**/*Companion*.*,**/*Module.*,**/*Dagger*.*,**/*MembersInjector*.*,**/*Extensions*.*,**/InputMethodManagerLeaks.*,**/*_Factory*.*,**/*_Provide*Factory*.*"
+    }
+}
 
 project.afterEvaluate {
 
@@ -54,7 +72,7 @@ project.afterEvaluate {
 
             def coverageSourceDirs = [
                     "${subproject.projectDir}/src/main/java",
-             ]
+            ]
 
             additionalSourceDirs.setFrom(files(coverageSourceDirs))
             sourceDirectories.setFrom(files(coverageSourceDirs))
@@ -62,6 +80,16 @@ project.afterEvaluate {
             executionData(files([
                     "${subproject.buildDir}/jacoco/test.exec"
             ]))
+        }
+    }
+    tasks.sonarqube.dependsOn jacocoMasterCoverage
+}
+
+subprojects {
+    apply plugin: "org.sonarqube"
+    sonarqube {
+        properties {
+          //  property "sonar.coverage.jacoco.xmlReportPaths", "$projectDir.parentFile.path/app/build/reports/jacoco/testDevDebugUnitTestCoverage/testDevDebugUnitTestCoverage.xml"
         }
     }
 }
