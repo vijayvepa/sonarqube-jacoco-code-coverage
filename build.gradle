@@ -1,8 +1,8 @@
-buildscript{
-    repositories{
+buildscript {
+    repositories {
         mavenCentral()
     }
-    dependencies{
+    dependencies {
         classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.8"
         classpath "org.jacoco:org.jacoco.core:0.8.5"
     }
@@ -10,11 +10,10 @@ buildscript{
 
 project.allprojects {
 
-
     apply plugin: 'java'
     apply plugin: 'jacoco'
 
-    repositories{
+    repositories {
         mavenCentral()
     }
 
@@ -27,9 +26,6 @@ project.allprojects {
 
     jacocoTestReport.dependsOn test
 }
-
-
-
 
 apply plugin: "org.sonarqube"
 
@@ -49,13 +45,7 @@ sonarqube {
 
 project.afterEvaluate {
 
-    tasks.create(name: "jacocoMasterCoverage", type: JacocoReport,
-            dependsOn: [
-                    ':domain:test',
-                    ':domain:jacocoTestReport',
-                    ':api:test',
-                    ':api:jacocoTestReport'
-            ]) {
+    tasks.create(name: "jacocoMasterCoverage", type: JacocoReport) {
         group = "Reporting"
         description = "Generate Jacoco coverage reports for the domain build"
 
@@ -65,9 +55,9 @@ project.afterEvaluate {
             csv.enabled = false
         }
 
-        project.subprojects {subproject ->
+        project.subprojects { subproject ->
 
-            print  "${subproject.projectDir}/src/main/java"
+            print "${subproject.projectDir}/src/main/java"
 
             def classDirs = [
                     "${subproject.buildDir}/classes/java/main"
@@ -85,8 +75,16 @@ project.afterEvaluate {
             executionData(files([
                     "${subproject.buildDir}/jacoco/test.exec"
             ]))
+
+
         }
     }
+
+    project.subprojects.each { subproject ->
+        jacocoMasterCoverage.dependsOn subproject.tasks.test.path
+        jacocoMasterCoverage.dependsOn subproject.tasks.jacocoTestReport.path
+    }
+
     tasks.sonarqube.dependsOn jacocoMasterCoverage
 }
 
@@ -94,7 +92,7 @@ subprojects {
     apply plugin: "org.sonarqube"
     sonarqube {
         properties {
-          //  property "sonar.coverage.jacoco.xmlReportPaths", "$projectDir.parentFile.path/app/build/reports/jacoco/testDevDebugUnitTestCoverage/testDevDebugUnitTestCoverage.xml"
+            //  property "sonar.coverage.jacoco.xmlReportPaths", "$projectDir.parentFile.path/app/build/reports/jacoco/testDevDebugUnitTestCoverage/testDevDebugUnitTestCoverage.xml"
         }
     }
 }
