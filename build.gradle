@@ -42,23 +42,26 @@ project.afterEvaluate {
             csv.enabled = false
         }
 
-        print  "${project(':domain').projectDir}/src/main/java"
+        project.subprojects {subproject ->
 
-        def classDirs = [
-                "${project(':domain').buildDir}/classes/java/main"
-        ]
+            print  "${subproject.projectDir}/src/main/java"
 
-        classDirectories.setFrom(files(classDirs))
+            def classDirs = [
+                    "${subproject.buildDir}/classes/java/main"
+            ]
 
-        def coverageSourceDirs = [
-                "${project(':domain').projectDir}/src/main/java",
-         ]
+            classDirectories.setFrom(files(classDirs))
 
-        additionalSourceDirs.setFrom(files(coverageSourceDirs))
-        sourceDirectories.setFrom(files(coverageSourceDirs))
+            def coverageSourceDirs = [
+                    "${subproject.projectDir}/src/main/java",
+             ]
 
-        executionData(files([
-                "${project(':domain').buildDir}/jacoco/test.exec"
-        ]))
+            additionalSourceDirs.setFrom(files(coverageSourceDirs))
+            sourceDirectories.setFrom(files(coverageSourceDirs))
+
+            executionData(files([
+                    "${subproject.buildDir}/jacoco/test.exec"
+            ]))
+        }
     }
 }
